@@ -10,6 +10,8 @@ from service.request import RequestProtocol
 from service.login import LoginProtocol
 from service.register import RegisterProtocol
 from service.searchCharacter import SearchCharacterProtocol
+from service.createCharacter import CreateCharacterProtocol
+from service.updateCharacter import UpdateCharacterProtocol
 
 # process different methods
 class MethodProtocol(object):
@@ -136,6 +138,8 @@ class ServerStub(object):
             'login' : LoginProtocol(),
             'register' : RegisterProtocol(),
             'searchCharacter' : SearchCharacterProtocol(),
+            'createCharacter' : CreateCharacterProtocol(),
+            'updateCharacter' : UpdateCharacterProtocol(),
         }
         self.handlers = handlers
         self.process_map = {
@@ -143,6 +147,8 @@ class ServerStub(object):
             'login' : self.handlers.login,
             'register' : self.handlers.register,
             'searchCharacter' : self.handlers.searchCharacer,
+            'createCharacter' : self.handlers.createCharacter,
+            'updateCharacter' : self.handlers.updateCharacter,
         }
         self.name = ''
 

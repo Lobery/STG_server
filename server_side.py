@@ -48,8 +48,7 @@ class Handlers:
             f.writelines(lines)
 
         # add user info
-        with open('file/userinfo/' + username + '.txt', 'w') as f:
-            f.write('10\n100\n0\n0\n')
+        os.mkdir('file/userinfo/' + username)
 
         return 1
 
@@ -86,6 +85,58 @@ class Handlers:
                 item.append(int(line))
             info.append(item)
         return info
+
+    @staticmethod
+    def createCharacter(username, characterName):
+        exist = False
+        # search if username exist
+        with open('file/user.txt','r') as f:
+            lines = f.readlines()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            line = line.split(',')
+            if len(line) != 2:
+                continue
+            _username = line[0]
+            if username == _username:
+                exist = True
+                break
+        if not exist:
+            return 0
+        file = 'file/userinfo/' + username + '/' + characterName + '.txt'
+        with open(file, 'w') as f:
+            f.write('10\n100\n0\n0\n')
+        return 1
+
+    @staticmethod
+    def updateCharacter(username, characterName,
+                        blood, bullet, level, experience):
+        exist = False
+        # search if username exist
+        with open('file/user.txt','r') as f:
+            lines = f.readlines()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            line = line.split(',')
+            if len(line) != 2:
+                continue
+            _username = line[0]
+            if username == _username:
+                exist = True
+                break
+        if not exist:
+            return 0
+        file = 'file/userinfo/' + username + '/' + characterName + '.txt'
+        with open(file, 'w') as f:
+            f.write(str(blood) + '\n' +
+                    str(bullet) + '\n' + 
+                    str(level) + '\n' +
+                    str(experience) + '\n')
+        return 1
 
 if __name__ == '__main__':
     _server = ThreadServer('127.0.0.1', 8000, Handlers)

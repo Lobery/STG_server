@@ -10,6 +10,8 @@ from service.request import RequestProtocol
 from service.login import LoginProtocol
 from service.register import RegisterProtocol
 from service.searchCharacter import SearchCharacterProtocol
+from service.createCharacter import CreateCharacterProtocol
+from service.updateCharacter import UpdateCharacterProtocol
 
 # connect with client
 class Channel(object):
@@ -52,17 +54,32 @@ class ClientStub(object):
     # perform login service
     def login(self, username, password):
         proto = LoginProtocol()
-        args = proto.args_encode(username, password);
+        args = proto.args_encode(username, password)
         return self.process(args, proto)
 
     # perform register service
     def register(self, username, password):
         proto = RegisterProtocol()
-        args = proto.args_encode(username, password);
+        args = proto.args_encode(username, password)
         return self.process(args, proto)
 
     # perform search character service
     def searchCharacter(self, username):
         proto = SearchCharacterProtocol()
-        args = proto.args_encode(username);
+        args = proto.args_encode(username)
+        return self.process(args, proto)
+
+
+    # perform create character service
+    def createCharacter(self, username, characterName):
+        proto = CreateCharacterProtocol()
+        args = proto.args_encode(username, characterName)
+        return self.process(args, proto)
+
+    # perform update character service
+    def updateCharacter(self, username, characterName,
+                        blood, bullet, level, experience):
+        proto = UpdateCharacterProtocol()
+        args = proto.args_encode(username, characterName,
+                                 blood, bullet, level, experience)
         return self.process(args, proto)
