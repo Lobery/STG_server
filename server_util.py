@@ -7,6 +7,9 @@ import threading
 
 # service provided by server
 from service.request import RequestProtocol
+from service.login import LoginProtocol
+from service.register import RegisterProtocol
+from service.searchCharacter import SearchCharacterProtocol
 
 # process different methods
 class MethodProtocol(object):
@@ -43,19 +46,6 @@ class MethodProtocol(object):
         return buff.decode()
 
 
-# connect with client
-class Channel(object):
-
-    # register host and port
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
-
-    # get connected client
-    def get_connection(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((self.host, self.port))
-        return sock
 
 # RPC server
 class Server(object):
@@ -129,32 +119,10 @@ class ThreadServer(object):
             while True:
                 stub.process()
         except EOFError:
-            print('客户端关闭了连接')
+            print('Client has shut down connection')
             client_sock.close()
 
 
-# client side to perform RPC
-class ClientStub(object):
-
-    # initialize
-    def __init__(self, channel):
-        self.channel = channel
-        self.conn = self.channel.get_connection()
-
-    # process para
-    # send by net
-    # process return value
-    def process(self, str, proto):
-        args = proto.args_encode(str)
-        self.conn.sendall(args)
-        result = proto.result_decode(self.conn)
-        return result
-
-
-    # perform reqeust service
-    def request(self, str):
-        proto = RequestProtocol()
-        return self.process(str, proto)
 
 # server side to perform RPC
 class ServerStub(object):
@@ -163,13 +131,19 @@ class ServerStub(object):
     def __init__(self, connection, handlers):
         self.conn = connection
         self.method_proto = MethodProtocol(self.conn)
-        self.process_map = {
-            'request' : self._process_request,
-        }
         self.protocol_map = {
             'request' : RequestProtocol(),
+            'login' : LoginProtocol(),
+            'register' : RegisterProtocol(),
+            'searchCharacter' : SearchCharacterProtocol(),
         }
         self.handlers = handlers
+        self.process_map = {
+            'request' : self.handlers.request,
+            'login' : self.handlers.login,
+            'register' : self.handlers.register,
+            'searchCharacter' : self.handlers.searchCharacer,
+        }
         self.name = ''
 
     # connect with client and finish RPC
@@ -178,8 +152,9 @@ class ServerStub(object):
         self.name = self.method_proto.get_string_value()
 
         # call request function
-        _process = self.process_map[self.name]
-        _process()
+        #_process = self.process_map[self.name]
+        #_process()
+        self._process_request()
 
 
     # process request
@@ -190,7 +165,8 @@ class ServerStub(object):
         args = proto.args_decode(self.conn)
 
         # call method
-        val = self.handlers.request(**args)
+        _process = self.process_map[self.name]
+        val = _process(**args)
         ret_message = proto.result_encode(val)
         self.conn.sendall(ret_message)
 

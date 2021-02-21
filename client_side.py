@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-from util import ClientStub
-from util import Channel
+from client_util import ClientStub
+from client_util import Channel
 
 # initialize connection
 channel = Channel('127.0.0.1', 8000)
@@ -9,7 +9,7 @@ stub = ClientStub(channel)
 
 
 try:
-    val = stub.request("abc")
+    val = stub.searchCharacter("neteeease1")
 except:
     pass
 else:
